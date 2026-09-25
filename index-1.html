@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<title>VIBE — My AI Closet</title>
+<style>
+:root{--bg:#f6f3ee;--ink:#111;--muted:#777;--card:#fff;--line:#e8e3db;--acid:#d9ff39}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+body{min-height:100vh}.app{max-width:520px;margin:auto;min-height:100vh;background:var(--bg);padding-bottom:88px}
+header{height:70px;padding:15px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(246,243,238,.94);backdrop-filter:blur(14px);z-index:5}
+.logo{font-weight:1000;letter-spacing:.18em;font-size:22px}.spark{width:40px;height:40px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center}
+main{padding:12px 18px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.16em;color:#7b7770;text-transform:uppercase}
+h1{font-size:37px;line-height:.94;letter-spacing:-.055em;margin:9px 0 20px}h2{font-size:20px;margin:0 0 9px}h3{margin:0 0 8px}
+p{line-height:1.45}.muted{color:var(--muted);font-size:13px}
+.hero{background:#111;color:#fff;border-radius:30px;padding:23px;margin-bottom:13px}.hero .eyebrow{color:#aaa}.hero p{color:#c9c9c9}.acid{background:var(--acid);border:0;border-radius:15px;padding:13px 17px;font-weight:950}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.tile{background:#fff;border:1px solid var(--line);border-radius:23px;padding:16px;min-height:135px}.tile .ico{font-size:28px}.tile b{display:block;margin-top:18px}.tile small{display:block;color:#777;margin-top:5px}
+.card{background:#fff;border:1px solid var(--line);border-radius:23px;padding:17px;margin:13px 0}.row{display:flex;gap:10px;align-items:center}.between{justify-content:space-between}
+.upload{display:block;border:2px dashed #c9c3ba;background:#fff;border-radius:21px;padding:25px 16px;text-align:center}.upload b{display:block;margin:7px 0 4px}.upload small{color:#777}input[type=file]{display:none}
+.profile-photo{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:24px;background:#e9e5de}.mini-photo{width:76px;height:76px;object-fit:cover;border-radius:18px;background:#eee}
+.chips{display:flex;gap:8px;overflow:auto;padding-bottom:3px}.chip{white-space:nowrap;background:#fff;border:1px solid #ddd;border-radius:20px;padding:9px 13px;font-size:13px}.chip.active{background:#111;color:#fff;border-color:#111}
+input[type=text],textarea{width:100%;border:1px solid #ddd;border-radius:15px;background:#fff;padding:13px;font:inherit;outline:none}textarea{min-height:90px;resize:none}
+.primary{width:100%;border:0;background:#111;color:#fff;border-radius:16px;padding:14px;font-weight:900;margin-top:9px}.secondary{border:1px solid #ddd;background:#fff;border-radius:13px;padding:10px 12px;font-weight:800}
+.items{display:grid;grid-template-columns:1fr 1fr;gap:10px}.item{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}.item img{width:100%;height:150px;object-fit:cover}.item .info{padding:9px}.item b{font-size:13px}.item small{display:block;color:#777;margin-top:3px}
+.outfit{background:#fff;border:1px solid var(--line);border-radius:24px;padding:17px;margin:12px 0}.outfit .piece{padding:8px 0;border-bottom:1px solid #eee;font-size:13px}.outfit .piece:last-child{border:0}.why{background:#f3f0ea;border-radius:15px;padding:11px;margin-top:10px;font-size:12px}
+.tryon{position:relative;overflow:hidden;border-radius:28px;background:#171717;min-height:430px;display:grid;place-items:center;color:white}.tryon img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.82}.tryon .overlay{position:relative;z-index:1;text-align:center;padding:24px;background:rgba(0,0,0,.48);width:100%}
+.notice{font-size:12px;background:#fff8d9;border:1px solid #eadb98;border-radius:15px;padding:11px;color:#5c4f19}.back{border:0;background:none;padding:0;margin:2px 0 15px;font-size:14px}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:520px;width:100%;background:rgba(255,255,255,.96);backdrop-filter:blur(15px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:9px 4px calc(9px + env(safe-area-inset-bottom));z-index:10}.nav{border:0;background:none;color:#777;font-size:10px}.nav b{display:block;font-size:20px;margin-bottom:2px}.nav.active{color:#111;font-weight:900}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">VIBE</div><div class="spark">✦</div></header>
+<main id="main"></main>
+<nav>
+<button class="nav active" data-p="home" onclick="go('home')"><b>⌂</b>Home</button>
+<button class="nav" data-p="closet" onclick="go('closet')"><b>👚</b>Closet</button>
+<button class="nav" data-p="style" onclick="go('style')"><b>✦</b>Style</button>
+<button class="nav" data-p="you" onclick="go('you')"><b>🪞</b>Me</button>
+</nav>
+</div>
+<script>
+const KEY='VIBE_FINAL_STATE';
+let S=JSON.parse(localStorage.getItem(KEY)||'{"me":null,"items":[],"style":"Y2K","saved":[]}');
+const aesthetics=['Y2K','Sporty','Grunge','Girly','Preppy','Streetwear','K-pop','Old Money'];
+const typeWords=['Top','Bottom','Layer','Shoes','Bag','Jewellery','Accessory','Perfume'];
+const recipes={
+Y2K:[['Top','Layer','Bottom','Jewellery','Bag','Shoes'],['Top','Top','Bottom','Accessory','Bag','Shoes'],['Top','Layer','Bottom','Jewellery','Shoes']],
+Sporty:[['Top','Bottom','Layer','Shoes','Bag'],['Top','Bottom','Accessory','Shoes','Jewellery']],
+Grunge:[['Top','Layer','Bottom','Jewellery','Shoes'],['Top','Top','Bottom','Bag','Shoes']],
+Girly:[['Top','Bottom','Bag','Jewellery','Accessory','Shoes']],
+Preppy:[['Top','Bottom','Layer','Bag','Jewellery','Shoes']],
+Streetwear:[['Top','Top','Bottom','Accessory','Shoes','Bag']],
+'K-pop':[['Top','Layer','Bottom','Bag','Jewellery','Shoes']],
+'Old Money':[['Top','Bottom','Layer','Jewellery','Bag','Shoes']]
+};
+function persist(){localStorage.setItem(KEY,JSON.stringify(S))}
+function nav(p){document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.p===p))}
+function go(p){nav(p);({home,closet,style,you}[p])()}
+function home(){
+main.innerHTML=`<div class="eyebrow">YOUR CLOSET × YOUR VIBE</div><h1>What's the vibe<br>today? 👀</h1>
+<div class="hero"><div class="eyebrow">PERSONAL AI STYLIST</div><h2>Not random outfits. Your outfits.</h2><p>Build a digital wardrobe, define your aesthetic and create combinations from pieces you actually own.</p><button class="acid" onclick="go('you')">START MY PROFILE ✦</button></div>
+<div class="grid">
+<div class="tile" onclick="go('you')"><div class="ico">🪞</div><b>My Digital Me</b><small>${S.me?'Photo saved':'Add your photo'}</small></div>
+<div class="tile" onclick="go('closet')"><div class="ico">📸</div><b>My Closet</b><small>${S.items.length} pieces</small></div>
+<div class="tile" onclick="go('style')"><div class="ico">🔥</div><b>Style Me</b><small>Y2K, sporty, grunge & more</small></div>
+<div class="tile" onclick="go('style');setTimeout(build,50)"><div class="ico">🎲</div><b>Surprise Me</b><small>Pick a vibe for me</small></div></div>
+<div class="card"><h2>How it works</h2><p class="muted">1. Add your photo. 2. Photograph your wardrobe. 3. Choose your aesthetic. 4. VIBE builds layered combinations. 5. Try-on is the next AI image stage.</p></div>`;
+}
+function you(){
+main.innerHTML=`<button class="back" onclick="go('home')">← Back</button><div class="eyebrow">YOUR DIGITAL SELF</div><h1>Meet your<br>digital you. 🪞</h1>
+${S.me?`<img class="profile-photo" src="${S.me}">`:''}
+<label class="upload" style="margin-top:12px">📸<b>${S.me?'Change my photo':'Add my photo'}</b><small>Use a clear full-body photo for the best future try-on result.</small><input type="file" accept="image/*" onchange="setMe(event)"></label>
+<div class="card"><h2>Style personality</h2><p class="muted">Pick the vibe VIBE should understand about you.</p><div class="chips">${aesthetics.map(a=>`<button class="chip ${S.style===a?'active':''}" onclick="S.style='${a}';persist();you()">${a}</button>`).join('')}</div></div>
+<div class="notice">Your photo is stored only in this browser in this prototype. The real AI try-on requires a secure image-generation backend; this app does not pretend a fake filter is a real try-on.</div>`;
+}
+function setMe(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{S.me=r.result;persist();you()};r.readAsDataURL(f)}
+function closet(){
+main.innerHTML=`<button class="back" onclick="go('home')">← Back</button><div class="eyebrow">YOUR WARDROBE</div><h1>Everything you own.</h1>
+<label class="upload">📸<b>Add clothes, shoes, jewellery, bags & perfume</b><small>Take photos or choose several from your gallery.</small><input type="file" accept="image/*" multiple onchange="addItems(event)"></label>
+<div class="card"><div class="row between"><div><div class="eyebrow">MY CLOSET</div><h2>${S.items.length} pieces</h2></div><button class="secondary" onclick="S.items=[];persist();closet()">Clear</button></div><div class="items">${renderItems()}</div></div>`;
+}
+function renderItems(){if(!S.items.length)return '<p class="muted">Your closet is empty. Add your first piece above ✨</p>';return S.items.map((x,i)=>`<div class="item"><img src="${x.url}"><div class="info"><b>${esc(x.name)}</b><small>${x.type}</small></div></div>`).join('')}
+function addItems(e){[...e.target.files].forEach(f=>{let r=new FileReader();r.onload=()=>{S.items.push({url:r.result,name:f.name.replace(/\.[^.]+$/,'').slice(0,28)||'Wardrobe piece',type:guess(f.name)});persist();closet()};r.readAsDataURL(f)})}
+function guess(n){n=n.toLowerCase();if(/perfume|fragrance|parfum/.test(n))return'Perfume';if(/shoe|sneaker|boot|heel/.test(n))return'Shoes';if(/bag|purse/.test(n))return'Bag';if(/necklace|chain|ring|earring|bracelet/.test(n))return'Jewellery';if(/jean|pant|cargo|trouser|short|skirt/.test(n))return'Bottom';if(/jacket|coat|hoodie|cardigan|shirt/.test(n))return'Layer';if(/tee|top|tank|crop/.test(n))return'Top';return'Accessory'}
+function style(){
+main.innerHTML=`<button class="back" onclick="go('home')">← Back</button><div class="eyebrow">YOUR AI STYLIST</div><h1>Build the fit.</h1>
+<div class="chips">${aesthetics.map(a=>`<button class="chip ${S.style===a?'active':''}" onclick="S.style='${a}';persist();style()">${a}</button>`).join('')}</div>
+<div class="card"><h2>Tell me the energy.</h2><textarea id="brief" placeholder="“Hot day, school, sporty but not too girly.”&#10;“Going out, make it Y2K but effortless.”&#10;“Use a black shirt as a layer.”"></textarea><button class="primary" onclick="build()">BUILD 3 FITS ✦</button></div>
+<div id="results"></div>`;
+}
+function build(){
+if(!S.items.length){results.innerHTML=`<div class="notice">I need your wardrobe first 👀 Go to <b>My Closet</b> and add some pieces. Then I'll build combinations from your actual items.</div>`;return}
+let brief=(document.getElementById('brief')?.value||'').toLowerCase(), groups={};S.items.forEach(x=>(groups[x.type]??=[]).push(x));
+let recipe=recipes[S.style]||recipes.Y2K, html='';
+for(let k=0;k<3;k++){let pieces=[],used=new Set();recipe[k%recipe.length].forEach((t,j)=>{let a=groups[t]||[];if(a.length){let x=a[(k+j)%a.length];if(!used.has(x.name)){pieces.push(x);used.add(x.name)}}});
+if(!pieces.length)pieces=S.items.slice(k,k+4);
+html+=`<div class="outfit"><div class="eyebrow">${S.style} · FIT ${k+1}</div><h3>${k===0?'WAIT… this one kinda ate. 🔥':k===1?'This is giving effortless. 👀':'Wildcard energy. 💀'}</h3>${pieces.map(x=>`<div class="piece"><b>${x.type}</b> — ${esc(x.name)}</div>`).join('')}<div class="why"><b>Stylist brain:</b> ${reason(S.style,brief,pieces)}<br><br><b>Vibe:</b> ${S.style} · <b>Cost:</b> ₹0 · <b>From your closet:</b> 100%</div><button class="secondary" onclick="saveFit(${k})">♡ Save fit</button></div>`}
+results.innerHTML=html;
+}
+function reason(style,brief,p){let s=`I kept the silhouette intentional and used your own pieces instead of randomly adding things.`;if(style==='Y2K')s=`The layering and accessories keep the silhouette very 2000s without making every piece compete.`;if(style==='Sporty')s=`The proportions stay relaxed and practical, while the accessories keep it styled rather than gym-like.`;if(style==='Grunge')s=`The darker layered structure gives the fit edge while the base pieces keep it wearable.`;if(brief.includes('hot'))s+=` Since you said hot, avoid stacking heavy layers unless the outer piece is being worn open.`;return s}
+function saveFit(k){S.saved.push({style:S.style,index:k});persist();alert('Saved ✦')}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+home();
+</script>
+</body></html>
