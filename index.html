@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d0d0d">
+<title>VIBE — Your AI Closet</title>
+<style>
+:root{--bg:#f7f5f1;--ink:#111;--muted:#777;--card:#fff;--line:#e9e6e1;--accent:#d7ff3f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink)}
+.app{max-width:480px;margin:auto;min-height:100vh;background:var(--bg);padding-bottom:82px}
+header{padding:20px;display:flex;align-items:center;justify-content:space-between}.logo{font-weight:1000;letter-spacing:.15em;font-size:22px}.avatar{width:38px;height:38px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-weight:800}
+main{padding:0 18px}.eyebrow{text-transform:uppercase;font-size:11px;font-weight:800;letter-spacing:.12em;color:#777}
+h1{font-size:34px;line-height:.98;margin:8px 0 20px;letter-spacing:-.05em}
+.hero{background:#111;color:#fff;border-radius:28px;padding:23px;margin-bottom:16px}.hero p{color:#cfcfcf;line-height:1.45}.hero button{background:var(--accent);border:0;border-radius:16px;padding:13px 16px;font-weight:900}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:16px;min-height:132px;cursor:pointer}.ico{font-size:27px}.card h3{margin:20px 0 4px;font-size:16px}.card p{margin:0;font-size:12px;color:#777}
+.section{margin:23px 0}.section-head{display:flex;justify-content:space-between;align-items:center}.section h2{font-size:18px;margin:0 0 12px}
+.chips{display:flex;gap:8px;overflow:auto;padding-bottom:4px}.chip{white-space:nowrap;border:1px solid #ddd;background:#fff;border-radius:18px;padding:9px 13px;font-size:13px;cursor:pointer}.chip.active{background:#111;color:#fff;border-color:#111}
+.fit{background:#fff;border:1px solid var(--line);border-radius:24px;padding:17px;margin-top:12px}.fit h3{margin:0 0 7px}.fit .items{line-height:1.8}.tag{display:inline-block;background:#f0eee9;border-radius:10px;padding:4px 8px;margin:3px;font-size:12px}.meter{font-size:12px;color:#666;margin-top:10px}.fit button{margin-top:10px;border:1px solid #ddd;background:#fff;border-radius:12px;padding:9px 11px}
+.upload{display:block;background:#fff;border:2px dashed #ccc;border-radius:22px;padding:28px 18px;text-align:center;cursor:pointer}.upload strong{display:block;font-size:16px;margin-bottom:6px}.upload span{font-size:12px;color:#777}
+input[type=file]{display:none}.items-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:13px}.item{background:#fff;border-radius:19px;overflow:hidden;border:1px solid var(--line)}.item img{width:100%;height:155px;object-fit:cover}.item-info{padding:10px}.item-name{font-weight:800;font-size:13px}.item-type{font-size:11px;color:#777;margin-top:3px}
+textarea{width:100%;min-height:100px;border:1px solid #ddd;border-radius:18px;padding:14px;font:inherit;resize:none;background:#fff}button{font:inherit;cursor:pointer}
+.primary{width:100%;border:0;background:#111;color:#fff;border-radius:17px;padding:14px;font-weight:850;margin-top:10px}
+.empty{color:#777;font-size:13px;padding:14px 0}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 6px calc(10px + env(safe-area-inset-bottom));z-index:5}.nav{border:0;background:none;color:#777;font-size:10px}.nav b{display:block;font-size:20px;margin-bottom:2px}.nav.on{color:#111;font-weight:800}
+.back{border:0;background:none;padding:0;font-size:14px;margin:8px 0 16px}
+.small{font-size:12px;color:#777;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">VIBE</div><div class="avatar">✦</div></header>
+<main id="main"></main>
+<nav>
+<button class="nav" data-page="home" onclick="page('home')"><b>⌂</b>Home</button>
+<button class="nav" data-page="closet" onclick="page('closet')"><b>👚</b>Closet</button>
+<button class="nav" data-page="style" onclick="page('style')"><b>✦</b>Style</button>
+<button class="nav" data-page="profile" onclick="page('profile')"><b>◉</b>Profile</button>
+</nav>
+</div>
+<script>
+const KEY='vibe_items_v1';
+let items=JSON.parse(localStorage.getItem(KEY)||'[]');
+let aesthetic='Y2K';
+
+const outfitDB={
+Y2K:[
+['Black oversized shirt','White fitted tee','Baggy blue jeans','Silver chain','Shoulder bag','Sneakers'],
+['Graphic baby tee','Low-rise jeans','Black belt','Mini bag','Hair clips','Sneakers'],
+['Fitted tank','Open oversized shirt','Cargo pants','Silver jewellery','Shoulder bag','Chunky sneakers']],
+Sporty:[
+['Fitted tee','Track pants','Cap','Mini hoops','Sneakers','Crossbody bag'],
+['Baby tee','Wide-leg cargos','Zip jacket','Sport watch','Sneakers','Shoulder bag']],
+Grunge:[
+['Graphic tee','Open black shirt','Cargo pants','Chain','Chunky sneakers','Dark bag'],
+['Baby tee','Oversized jacket','Baggy jeans','Silver rings','Sneakers','Cap']],
+Girly:[
+['Baby tee','Low-rise jeans','Mini bag','Hair clips','Layered necklace','Sneakers'],
+['Fitted top','Pleated skirt','Shoulder bag','Hoops','Hair clips','Loafers']],
+Preppy:[
+['Fitted shirt','Straight jeans','Belt','Minimal jewellery','Loafers','Shoulder bag'],
+['Knit top','Pleated skirt','Mini bag','Hair clips','Loafers','Watch']]
+};
+
+function save(){localStorage.setItem(KEY,JSON.stringify(items))}
+function shell(title,sub,body){document.getElementById('main').innerHTML=`<button class="back" onclick="page('home')">← Back</button><div class="eyebrow">${sub||'VIBE'}</div><h1>${title}</h1>${body}`}
+function page(p){
+ document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('on',x.dataset.page===p));
+ if(p==='home')home(); if(p==='closet')closet(); if(p==='style')style(); if(p==='profile')profile();
+}
+function home(){
+ document.getElementById('main').innerHTML=`
+ <div class="eyebrow">YOUR CLOSET, BUT SMARTER</div><h1>What's the vibe<br>today? 👀</h1>
+ <div class="hero"><div class="eyebrow" style="color:#aaa">AI STYLIST</div><h2 style="margin:8px 0 4px">Your wardrobe just got interesting.</h2><p>Tell VIBE the energy. It builds combinations from what you own — including layers and accessories.</p><button onclick="page('style')">STYLE ME ✦</button></div>
+ <div class="grid">
+ <div class="card" onclick="page('closet')"><div class="ico">📸</div><h3>Add to Closet</h3><p>Snap your clothes, shoes & accessories.</p></div>
+ <div class="card" onclick="page('style')"><div class="ico">🔥</div><h3>Build a Fit</h3><p>Y2K, sporty, girly, grunge & more.</p></div>
+ <div class="card" onclick="tryon()"><div class="ico">🪞</div><h3>Try It On</h3><p>Your digital-you feature is next.</p></div>
+ <div class="card" onclick="surprise()"><div class="ico">🎲</div><h3>Surprise Me</h3><p>Random, but actually styled.</p></div></div>
+ <div class="section"><div class="section-head"><h2>Quick vibes</h2></div><div class="chips">${Object.keys(outfitDB).map(x=>`<div class="chip" onclick="makeFit('${x}')">${x}</div>`).join('')}</div><div id="homefit"></div></div>`;
+}
+function closet(){
+ shell('My Closet','WARDROBE',`
+ <label class="upload">📸<strong>Add clothes & accessories</strong><span>Take photos or choose from your gallery. Saved locally on this device.</span><input type="file" accept="image/*" multiple onchange="addPhotos(event)"></label>
+ <div class="section"><div class="section-head"><h2>${items.length} items</h2><span class="small">Your private closet</span></div><div id="items" class="items-grid">${renderItems()}</div></div>`);
+}
+function renderItems(){if(!items.length)return '<div class="empty">No items yet. Add your first piece above ✨</div>';return items.map((x,i)=>`<div class="item"><img src="${x.url}"><div class="item-info"><div class="item-name">${x.name}</div><div class="item-type">${x.type}</div></div></div>`).join('')}
+function addPhotos(e){
+ [...e.target.files].forEach(f=>{const r=new FileReader();r.onload=()=>{let type=guess(f.name);items.push({url:r.result,name:pretty(type),type:type});save();closet()};r.readAsDataURL(f)});
+}
+function guess(n){n=n.toLowerCase();if(/shoe|sneaker|boot/.test(n))return'Shoes';if(/bag|purse/.test(n))return'Bag';if(/necklace|chain|ring|earring|bracelet/.test(n))return'Jewellery';if(/jean|pant|cargo|trouser|short/.test(n))return'Bottom';if(/shirt|tee|top|hoodie/.test(n))return'Top';return'Wardrobe item'}
+function pretty(t){return t==='Top'?'New top':t==='Bottom'?'New bottom':t==='Shoes'?'New shoes':t==='Bag'?'New bag':t==='Jewellery'?'New jewellery':'New item'}
+function style(){
+ shell('Style Me','AI STYLIST',`
+ <p class="small">Pick an aesthetic. Then tell me the occasion or just leave it blank.</p>
+ <div class="chips">${Object.keys(outfitDB).map(x=>`<div class="chip ${x===aesthetic?'active':''}" onclick="aesthetic='${x}';style()">${x}</div>`).join('')}</div>
+ <div class="section"><textarea id="prompt" placeholder="e.g. school tomorrow, hot weather, don't want to look too girly..."></textarea><button class="primary" onclick="makeFit(aesthetic,document.getElementById('prompt').value)">GENERATE MY FIT ✦</button></div>
+ <div id="fit"></div>`);
+}
+function makeFit(a,context=''){
+ aesthetic=a;let arr=outfitDB[a][Math.floor(Math.random()*outfitDB[a].length)];
+ const owned=items.length?`<p class="small">Prototype note: your uploaded closet is saved locally. Full AI item matching comes in the next build.</p>`:'<p class="small">Add your real wardrobe in Closet and VIBE will use it in the AI version.</p>';
+ const html=`<div class="fit"><div class="eyebrow">${a} ENERGY</div><h3>OKAY WAIT — THIS FIT ATE 🔥</h3><div class="items">${arr.map(x=>`<span class="tag">${x}</span>`).join('')}</div><p class="meter">Drip <b>9.2/10</b> · Effort <b>4/10</b> · Cost <b>₹0 💀</b></p><p><b>Stylist brain:</b> The oversized + fitted contrast keeps the silhouette intentional. Silver details repeat instead of fighting each other.</p>${context?`<p class="small"><b>Your brief:</b> ${escapeHtml(context)}</p>`:''}${owned}<button onclick="saveFit('${a}')">♡ Save this fit</button> <button onclick="makeFit('${a}')">↻ Remix</button></div>`;
+ document.querySelector('#fit,#homefit')?.remove();
+ const target=document.getElementById('fit')||document.getElementById('homefit'); if(target)target.outerHTML=html;
+}
+function saveFit(a){alert('Saved ✦ Your fit history will become a full feature in the next build.')}
+function surprise(){aesthetic=Object.keys(outfitDB)[Math.floor(Math.random()*Object.keys(outfitDB).length)];page('style');setTimeout(()=>makeFit(aesthetic),30)}
+function tryon(){alert('🪞 Virtual Try-On is the next major build: upload your photo once, then VIBE will generate your digital-you wearing complete outfits.')}
+function profile(){shell('Your Style DNA','PROFILE',`<div class="fit"><h3>Current vibe</h3><p>Y2K • sporty • experimental</p><p class="small">The real AI version will learn from the outfits you save, skip and rate.</p></div><div class="fit"><h3>Closet stats</h3><p>${items.length} wardrobe photos saved on this device.</p></div>`)}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+home();
+</script>
+</body>
+</html>
